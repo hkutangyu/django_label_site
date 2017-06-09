@@ -16,8 +16,10 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from label_app.views import api_auth
+from label_app.views import upload_logo_samples
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'api_auth/', api_auth)
+    url(r'api_auth/', api_auth),
+    url(r'upload_logo_samples/', upload_logo_samples)
 ]
