@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django.shortcuts import render, HttpResponse
 from django.contrib.auth import authenticate
 import json
