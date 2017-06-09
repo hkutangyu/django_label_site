@@ -33,8 +33,8 @@ def api_auth(request):
 
 @csrf_exempt
 def upload_logo_samples(request):
+    ret_dict = {}
     if request.method == 'POST':
-
         zipfile = request.FILES.get('file')
         print(zipfile.name)
         file_full_path = os.path.join(LOGO_SAMPLES_FOLDER, zipfile.name)
@@ -44,8 +44,14 @@ def upload_logo_samples(request):
         destination.close()
 
         # uncompress
-        unzip_cmd = 'unzip -o -O CP936 ' + file_full_path + ' -d ' + LOGO_SAMPLES_FOLDER
+        unzip_cmd = 'unzip -o ' + file_full_path + ' -d ' + LOGO_SAMPLES_FOLDER
         os.system(unzip_cmd)
         os.remove(file_full_path)
-        return HttpResponse('upload ok')
+        ret_dict['ret'] = True
+        ret_dict['msg'] = 'upload ok'
+        return HttpResponse(json.dumps(ret_dict, ensure_ascii=False))
+    else:
+        ret_dict['ret'] = False
+        ret_dict['msg'] = 'Please user POST method'
+        return HttpResponse(json.dumps(ret_dict))
 
