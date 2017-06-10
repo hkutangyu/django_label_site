@@ -120,3 +120,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 STATIC_ROOT = '/home/tangyu/webroot/django_label_site/static/'
 STATIC_URL = '/static/'
+
+SUIT_CONFIG = {
+    'ADMIN_NAME':'谷熊商标管理系统',
+    'MENU':(
+        '网站应用',
+        {'app': 'label_app', 'label': '标注管理'}
+    )
+}
