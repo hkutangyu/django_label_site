@@ -44,7 +44,7 @@ def upload_logo_samples(request):
         destination.close()
 
         # uncompress
-        unzip_cmd = 'unzip -o ' + file_full_path + ' -d ' + LOGO_SAMPLES_FOLDER
+        unzip_cmd = 'unzip -o -O CP936 ' + file_full_path + ' -d ' + LOGO_SAMPLES_FOLDER
         os.system(unzip_cmd)
         os.remove(file_full_path)
         ret_dict['ret'] = True
