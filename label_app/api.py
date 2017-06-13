@@ -107,4 +107,7 @@ def label_position(request, logo_cate=None, image_name=None):
         else:
             label_pos_list = LabelPosition.objects.all()
             serializer = LabelPosSerializer(label_pos_list, many=True)
-            return Response(serializer.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
