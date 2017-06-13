@@ -52,15 +52,19 @@ class Photo(models.Model):
     logo_category = models.ForeignKey(LogoCategory, verbose_name='图片类别')
     create_date = models.DateTimeField(verbose_name='创建时间', auto_now=True)
     image = models.ImageField(verbose_name='图片', null=False, upload_to=upload_to)
-    isVerify = models.BooleanField(verbose_name='审核状态', default=False)
-    verify_people = models.ForeignKey(User)
 
     def __str__(self):
         return self.image.name
 
 
+class VerifyStatus(models.Model):
+    isVerify = models.BooleanField(verbose_name='审核状态', default=False)
+    verify_people = models.ForeignKey(User, verbose_name='审核人')
+    photo = models.ForeignKey(Photo, verbose_name='图片')
+
+
 class LabelPosition(models.Model):
-    photo = models.ForeignKey(Photo, verbose_name='图片',)
+    photo = models.ForeignKey(Photo, verbose_name='图片')
     create_date = models.DateTimeField(verbose_name='标注时间', auto_now=True)
     pos = models.CharField(max_length=100,
                            validators=[validate_comma_separated_integer_list],
