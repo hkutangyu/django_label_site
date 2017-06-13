@@ -8,6 +8,8 @@ from django.core.files.base import ContentFile
 from django.views.decorators.csrf import csrf_exempt
 import os
 import shutil
+from label_app.models import Photo, LogoCategory
+import datetime
 
 LOGO_SAMPLES_FOLDER = '/home/tangyu/logo_db/logo_samples/'
 
@@ -55,3 +57,22 @@ def upload_logo_samples(request):
         ret_dict['msg'] = 'Please user POST method'
         return HttpResponse(json.dumps(ret_dict))
 
+@csrf_exempt
+def upload_logo_sample(request):
+    ret_dict = {}
+    if request.method == 'POST':
+        logo_category = request.POST.get('logo_category')
+        try:
+            logo_category_obj = LogoCategory.objects.get(logo_category=logo_category)
+        except:
+            logo_category_obj = LogoCategory(logo_category=logo_category)
+            logo_category_obj.save()
+        img = Photo(logo_category=logo_category_obj, image=request.FILES['file'])
+        img.save()
+        ret_dict['ret'] = True
+        ret_dict['msg'] = 'upload ok'
+        return HttpResponse(json.dumps(ret_dict, ensure_ascii=False))
+    else:
+        ret_dict['ret'] = False
+        ret_dict['msg'] = 'Please user POST method'
+        return HttpResponse(json.dumps(ret_dict))

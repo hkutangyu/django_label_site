@@ -17,9 +17,20 @@ from django.conf.urls import url
 from django.contrib import admin
 from label_app.views import api_auth
 from label_app.views import upload_logo_samples
+from label_app.views import upload_logo_sample
+from label_app.api import logo_category
+from label_app.api import logo_images
+from label_app.api import label_position
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'api_auth/', api_auth),
-    url(r'upload_logo_samples/', upload_logo_samples)
+    url(r'upload_logo_samples/', upload_logo_samples),
+    url(r'upload_logo_sample/', upload_logo_sample),
+    url(r'api/logo_categories/$', logo_category, name='logo_categories'),
+    url(r'api/logo_categories/(?P<username>[A-Za-z]+)$', logo_category, name='logo_categories'),
+    url(r'api/logo_images/$', logo_images, name='logo_images'),
+    url(r'api/logo_images/(?P<logo_cate>.+)$', logo_images, name='logo_images'),
+    url(r'api/label_position/$', label_position),
+    url(r'api/label_position/(?P<logo_cate>.+)/(?P<image_name>.+)$', label_position)
 ]

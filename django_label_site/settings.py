@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '&@t#&ji75o*9u$&8i97ztctbseq4v0)qn$r8gp$&p088)&k-=i'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -120,6 +120,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 STATIC_ROOT = '/home/tangyu/webroot/django_label_site/static/'
 STATIC_URL = '/static/'
+
+MEDIA_ROOT = '/home/tangyu/logo_db/'
+MEDIA_URL = '/media/'
 
 SUIT_CONFIG = {
     'ADMIN_NAME':'谷熊商标管理系统',
