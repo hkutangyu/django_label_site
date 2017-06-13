@@ -33,7 +33,7 @@ class UserLogoRelation(models.Model):
         verbose_name_plural = "商标分配"
 
     def __str__(self):
-        return self.logo_category.logo_category + '->' + self.user.username
+        return self.user.username
 
 
 def upload_to(instance, filename):
