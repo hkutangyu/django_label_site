@@ -21,6 +21,7 @@ from label_app.views import upload_logo_sample
 from label_app.api import logo_category
 from label_app.api import logo_images
 from label_app.api import label_position
+from label_app.api import verify_status
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -32,5 +33,7 @@ urlpatterns = [
     url(r'api/logo_images/$', logo_images, name='logo_images'),
     url(r'api/logo_images/(?P<logo_cate>.+)$', logo_images, name='logo_images'),
     url(r'api/label_position/$', label_position),
-    url(r'api/label_position/(?P<logo_cate>.+)/(?P<image_name>.+)$', label_position)
+    url(r'api/label_position/(?P<logo_cate>.+)/(?P<image_name>.+)$', label_position),
+    url(r'api/verify_status/$', verify_status),
+    url(r'api/verify_status/(?P<logo_cate>.+)/(?P<image_name>.+)$', verify_status),
 ]

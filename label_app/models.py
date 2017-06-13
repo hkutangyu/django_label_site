@@ -56,11 +56,19 @@ class Photo(models.Model):
     def __str__(self):
         return self.image.name
 
+    class Meta:
+        verbose_name = "图片"
+        verbose_name_plural = "图片"
+
 
 class VerifyStatus(models.Model):
     isVerify = models.BooleanField(verbose_name='审核状态', default=False)
     verify_people = models.ForeignKey(User, verbose_name='审核人')
     photo = models.ForeignKey(Photo, verbose_name='图片')
+
+    class Meta:
+        verbose_name = "审核状态"
+        verbose_name_plural = "审核状态"
 
 
 class LabelPosition(models.Model):
@@ -71,6 +79,10 @@ class LabelPosition(models.Model):
                            verbose_name='标注坐标')
     label_user = models.ForeignKey(User, verbose_name='标注人')
     label_name = models.ForeignKey(LogoCategory, verbose_name='类别')
+
+    class Meta:
+        verbose_name = "标注位置"
+        verbose_name_plural = "标注位置"
 
 
 post_delete.connect(delete_file, sender=Photo)

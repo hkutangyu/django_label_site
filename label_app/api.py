@@ -4,12 +4,16 @@ from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework import status
 import os
+from django.shortcuts import render, HttpResponse
 
 from label_app.models import LogoCategory
 from label_app.models import Photo
 from label_app.models import UserLogoRelation
 from label_app.models import LabelPosition
+from label_app.models import VerifyStatus
 from django.contrib.auth.models import User
+import json
+from django.http import QueryDict
 from django.views.decorators.csrf import csrf_exempt
 import datetime
 
@@ -46,6 +50,14 @@ class LabelPosSerializer(serializers.ModelSerializer):
     class Meta:
         model = LabelPosition
         fields = '__all__'
+
+
+class VerifySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = VerifyStatus
+        fields = '__all__'
+
 
 @api_view(['GET', 'POST'])
 def logo_category(request, username=None):
@@ -85,8 +97,6 @@ def logo_images(request, logo_cate=None):
         print(request.data)
         logo_cate = request.data['logo_category']
         request.data['create_date'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        request.data['isVerify'] = False
-        request.data['verify_people'] = User.objects.filter(username='admin')
         request.data['logo_category'] = LogoCategory.objects.filter(logo_category=logo_cate)
         print(request.data)
         serializer = PhotoSerializer(data=request.data)
@@ -96,18 +106,62 @@ def logo_images(request, logo_cate=None):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'PUT'])
+@api_view(['GET', 'POST', 'DELETE'])
 def label_position(request, logo_cate=None, image_name=None):
     if request.method == 'GET':
         if image_name and logo_cate:
             label_pos_list = LabelPosition.objects.filter(photo__image='logo_pic/'+logo_cate+'/'+image_name)
-
-            serializer = LabelPosSerializer(label_pos_list, many=True)
-            return Response(serializer.data)
         else:
             label_pos_list = LabelPosition.objects.all()
-            serializer = LabelPosSerializer(label_pos_list, many=True)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = LabelPosSerializer(label_pos_list, many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    elif request.method == 'POST':
+        if image_name and logo_cate:
+            photo = Photo.objects.filter(image='logo_pic/' + logo_cate + '/' + image_name)[0]
+            #create_date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            pos = request.data['pos']
+            user = User.objects.filter(username=request.data['label_user'])[0]
+            logo_name = LogoCategory.objects.filter(logo_category=logo_cate)[0]
+            new_label = LabelPosition.objects.create(photo=photo,pos=pos, label_user=user,label_name=logo_name)
+            new_label.save()
+            res_data = {'username': user.username}
+            return HttpResponse(json.dumps(res_data), status=status.HTTP_201_CREATED)
+    elif request.method == 'DELETE':
+        if image_name and logo_cate:
+            label_pos_list = LabelPosition.objects.filter(photo__image='logo_pic/' + logo_cate + '/' + image_name)
+            label_pos_list.delete()
+            res_data = {'image_name': image_name}
+            return HttpResponse(json.dumps(res_data), status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET', 'POST'])
+def verify_status(request, logo_cate=None, image_name=None):
+    if request.method == 'GET':
+        if image_name and logo_cate:
+            verify_list = VerifyStatus.objects.filter(photo__image='logo_pic/'+logo_cate+'/'+image_name)
+        else:
+            verify_list = VerifyStatus.objects.all()
+        serializer = VerifySerializer(verify_list, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        if image_name and logo_cate:
+            verify_list = VerifyStatus.objects.filter(photo__image='logo_pic/'+logo_cate+'/'+image_name)
+            user = User.objects.filter(username=request.data['verify_people'])[0]
+            if len(verify_list) > 0:
+                for v in verify_list:
+                    v.isVerify = request.data['isVerify']
+                    v.verify_people = user
+                    v.save()
+                    res_data = {'verify_people': user.username, 'isVerify': v.isVerify}
+                    return HttpResponse(json.dumps(res_data), status=status.HTTP_201_CREATED)
+            else:
+                photo = Photo.objects.filter(image='logo_pic/' + logo_cate + '/' + image_name)[0]
+                v = VerifyStatus.objects.create(isVerify=request.data['isVerify'], verify_people=user, photo=photo)
+                v.save()
+                res_data = {'verify_people': user.username, 'isVerify': v.isVerify}
+                return HttpResponse(json.dumps(res_data), status=status.HTTP_201_CREATED)
+
+
+
