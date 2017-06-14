@@ -104,6 +104,13 @@ def logo_images(request, logo_cate=None):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'PUT':
+        l = LogoCategory.objects.filter(logo_category=logo_cate)[0]
+        new_name = request.data['new_name']
+        l.logo_category = new_name
+        l.save()
+        ret_dict = {'logo_category': l.logo_category}
+        return HttpResponse(json.dumps(ret_dict))
 
 
 @api_view(['GET', 'POST', 'DELETE'])
