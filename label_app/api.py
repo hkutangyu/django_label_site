@@ -134,7 +134,7 @@ def label_position(request, logo_cate=None, image_name=None):
             logo_name = LogoCategory.objects.filter(logo_category=logo_cate)[0]
             new_label = LabelPosition.objects.create(photo=photo,pos=pos, label_user=user,label_name=logo_name)
             new_label.save()
-            res_data = {'username': user.username}
+            res_data = {'username': user.username, 'image_name': image_name, 'logo_cate': logo_cate}
             return HttpResponse(json.dumps(res_data), status=status.HTTP_201_CREATED)
     elif request.method == 'DELETE':
         if image_name and logo_cate:
