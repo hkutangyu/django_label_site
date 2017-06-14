@@ -84,6 +84,9 @@ class LabelPosition(models.Model):
         verbose_name = "标注位置"
         verbose_name_plural = "标注位置"
 
+    def __str__(self):
+        return self.photo.image.name
+
 
 post_delete.connect(delete_file, sender=Photo)
 post_delete.connect(delete_file, sender=LogoCategory)
