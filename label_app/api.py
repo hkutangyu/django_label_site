@@ -84,7 +84,7 @@ def logo_category(request, username=None):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'PUT'])
 def logo_images(request, logo_cate=None):
     if request.method == 'GET':
         if logo_cate:
