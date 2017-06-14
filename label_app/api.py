@@ -59,7 +59,7 @@ class VerifySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST','PUT'])
 def logo_category(request, username=None):
     if request.method == 'GET':
         if username:
@@ -82,6 +82,14 @@ def logo_category(request, username=None):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'PUT':
+        cur_logo_cate = request.data['cur_logo_cate']
+        l = LogoCategory.objects.filter(logo_category=cur_logo_cate)[0]
+        new_logo_cate = request.data['new_logo_cate']
+        l.logo_category = new_logo_cate
+        l.save()
+        ret_dict = {'logo_category': l.logo_category}
+        return HttpResponse(json.dumps(ret_dict))
 
 
 @api_view(['GET', 'POST', 'PUT'])
@@ -104,13 +112,7 @@ def logo_images(request, logo_cate=None):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    elif request.method == 'PUT':
-        l = LogoCategory.objects.filter(logo_category=logo_cate)[0]
-        new_name = request.data['new_name']
-        l.logo_category = new_name
-        l.save()
-        ret_dict = {'logo_category': l.logo_category}
-        return HttpResponse(json.dumps(ret_dict))
+
 
 
 @api_view(['GET', 'POST', 'DELETE'])
