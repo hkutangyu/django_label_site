@@ -114,8 +114,16 @@ def label_position(request, logo_cate=None, image_name=None):
         else:
             label_pos_list = LabelPosition.objects.all()
 
-        serializer = LabelPosSerializer(label_pos_list, many=True)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        #serializer = LabelPosSerializer(label_pos_list, many=True)
+        #return Response(serializer.data, status=status.HTTP_201_CREATED)
+        res_list = []
+        for label in label_pos_list:
+            ret_dict = {'label_user': label.label_user.username, 'label_name': label.label_name.logo_category,
+                        'pos': label.pos, 'create_date': label.create_date.strftime('%Y-%m-%d %H:%M:%S'),
+                        'photo': label.photo.image.name}
+            res_list.append(ret_dict)
+        return HttpResponse(json.dumps(res_list))
+
 
     elif request.method == 'POST':
         if image_name and logo_cate:

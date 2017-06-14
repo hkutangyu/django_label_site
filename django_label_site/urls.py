@@ -29,7 +29,7 @@ urlpatterns = [
     url(r'upload_logo_samples/', upload_logo_samples),
     url(r'upload_logo_sample/', upload_logo_sample),
     url(r'api/logo_categories/$', logo_category, name='logo_categories'),
-    url(r'api/logo_categories/(?P<username>[A-Za-z]+)$', logo_category, name='logo_categories'),
+    url(r'api/logo_categories/(?P<username>.+)$', logo_category, name='logo_categories'),
     url(r'api/logo_images/$', logo_images, name='logo_images'),
     url(r'api/logo_images/(?P<logo_cate>.+)$', logo_images, name='logo_images'),
     url(r'api/label_position/$', label_position),
