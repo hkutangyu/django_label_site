@@ -119,7 +119,7 @@ def logo_images(request, logo_cate=None):
 def label_position(request, logo_cate=None, image_name=None):
     if request.method == 'GET':
         if image_name and logo_cate:
-            label_pos_list = LabelPosition.objects.filter(photo__image='logo_pic/'+logo_cate+'/'+image_name)
+            label_pos_list = LabelPosition.objects.filter(photo__image='logo_pic/'+image_name)
         else:
             label_pos_list = LabelPosition.objects.all()
 
@@ -133,21 +133,25 @@ def label_position(request, logo_cate=None, image_name=None):
             res_list.append(ret_dict)
         return HttpResponse(json.dumps(res_list))
 
-
     elif request.method == 'POST':
         if image_name and logo_cate:
-            photo = Photo.objects.filter(image='logo_pic/' + logo_cate + '/' + image_name)[0]
-            #create_date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            pos = request.data['pos']
-            user = User.objects.filter(username=request.data['label_user'])[0]
-            logo_name = LogoCategory.objects.filter(logo_category=logo_cate)[0]
-            new_label = LabelPosition.objects.create(photo=photo,pos=pos, label_user=user,label_name=logo_name)
-            new_label.save()
-            res_data = {'username': user.username, 'image_name': image_name, 'logo_cate': logo_cate}
-            return HttpResponse(json.dumps(res_data), status=status.HTTP_201_CREATED)
+            photos = Photo.objects.filter(image='logo_pic/' + image_name)
+            if len(photos) > 0:
+                photo = photos[0]
+                #create_date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                pos = request.data['pos']
+                user = User.objects.filter(username=request.data['label_user'])[0]
+                logo_name = LogoCategory.objects.filter(logo_category=logo_cate)[0]
+                new_label = LabelPosition.objects.create(photo=photo,pos=pos, label_user=user,label_name=logo_name)
+                new_label.save()
+                res_data = {'username': user.username, 'image_name': image_name, 'logo_cate': logo_cate}
+                return HttpResponse(json.dumps(res_data), status=status.HTTP_201_CREATED)
+            else:
+                res_data = {'ret': False, 'msg': 'image not exist'}
+                return HttpResponse(json.dumps(res_data), status=status.HTTP_201_CREATED)
     elif request.method == 'DELETE':
         if image_name and logo_cate:
-            label_pos_list = LabelPosition.objects.filter(photo__image='logo_pic/' + logo_cate + '/' + image_name)
+            label_pos_list = LabelPosition.objects.filter(photo__image='logo_pic/' + image_name)
             label_pos_list.delete()
             res_data = {'image_name': image_name}
             return HttpResponse(json.dumps(res_data), status=status.HTTP_201_CREATED)

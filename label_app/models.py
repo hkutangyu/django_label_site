@@ -51,7 +51,7 @@ class Photo(models.Model):
     #name = models.CharField(verbose_name='文件名', max_length=100, null=False)
     logo_category = models.ForeignKey(LogoCategory, verbose_name='图片类别')
     create_date = models.DateTimeField(verbose_name='创建时间', auto_now=True)
-    image = models.ImageField(verbose_name='图片', null=False, upload_to=upload_to)
+    image = models.ImageField(verbose_name='图片', null=False, upload_to='logo_pic')
 
     def __str__(self):
         return self.image.name
