@@ -111,15 +111,15 @@ def logo_images(request, logo_cate=None):
         ph = Photo.objects.filter(image='logo_pic/'+img_file.name)
         if ph:
             ret = {'ret': 'failed', 'msg': 'already exist'}
-            return HttpResponse(json.dumps(ret), status=status.HTTP_201_CREATED)
+            return HttpResponse(json.dumps(ret))
         serializer = PhotoSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             #return Response(serializer.data, status=status.HTTP_201_CREATED)
             ret = {'ret': 'success', 'msg': 'add image success'}
-            return HttpResponse(json.dumps(ret), status=status.HTTP_201_CREAT)
+            return HttpResponse(json.dumps(ret))
         ret = {'ret': 'failed', 'msg': 'bad request'}
-        return HttpResponse(json.dumps(ret), status=status.HTTP_400_BAD_REQUEST)
+        return HttpResponse(json.dumps(ret))
 
 
 
