@@ -23,6 +23,7 @@ class LogoCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = LogoCategory
         fields = '__all__'
+        depth = 1
 
 
 class LogoImagesSerializer(serializers.ModelSerializer):
@@ -64,20 +65,19 @@ def logo_category(request, username=None):
     if request.method == 'GET':
         if username:
             logo_cate_list = LogoCategory.objects.filter(userlogorelation__user__username=username)
-
         else:
             logo_cate_list = LogoCategory.objects.all()
         serializer = LogoCategorySerializer(logo_cate_list, many=True)
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        print(request.data)
+        #print(request.data)
+
         request.data['create_date'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         img_file = request.FILES.get('image')
         request.data['logo_category'] = os.path.splitext(img_file.name)[0]
-        print(request.data)
         serializer = LogoCategorySerializer(data=request.data)
-        #serializer.validated_data.set('create_date', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        serializer.validated_data.set('create_date', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -103,15 +103,23 @@ def logo_images(request, logo_cate=None):
         return Response(serializer.data)
     elif request.method == 'POST':
         print(request.data)
-        logo_cate = request.data['logo_category']
+        logo_name = request.data['logo_category']
         request.data['create_date'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        request.data['logo_category'] = LogoCategory.objects.filter(logo_category=logo_cate)
+        request.data['logo_category'] = LogoCategory.objects.filter(logo_category=logo_name)
         print(request.data)
+        img_file = request.FILES.get('image')
+        ph = Photo.objects.filter(image='logo_pic/'+img_file.name)
+        if ph:
+            ret = {'ret': 'failed', 'msg': 'already exist'}
+            return HttpResponse(json.dumps(ret), status=status.HTTP_201_CREATED)
         serializer = PhotoSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            #return Response(serializer.data, status=status.HTTP_201_CREATED)
+            ret = {'ret': 'success', 'msg': 'add image success'}
+            return HttpResponse(json.dumps(ret), status=status.HTTP_201_CREAT)
+        ret = {'ret': 'failed', 'msg': 'bad request'}
+        return HttpResponse(json.dumps(ret), status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -150,7 +158,7 @@ def label_position(request, logo_cate=None, image_name=None):
                 res_data = {'ret': False, 'msg': 'image not exist'}
                 return HttpResponse(json.dumps(res_data), status=status.HTTP_201_CREATED)
     elif request.method == 'DELETE':
-        if image_name and logo_cate:
+        if image_name:
             label_pos_list = LabelPosition.objects.filter(photo__image='logo_pic/' + image_name)
             label_pos_list.delete()
             res_data = {'image_name': image_name}
